@@ -1,0 +1,39 @@
+<svg width="794" height="1123" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .title { font: bold 36px sans-serif; fill: #4a8c34; }
+    .subtitle { font: italic 24px sans-serif; fill: #666; }
+    .content { font: 20px sans-serif; fill: #222; }
+    .section { font: bold 22px sans-serif; fill: #D81B60; }
+  </style>
+
+  <text x="50" y="80" class="title">{{ zhuti }} / {{ zhutien }}</text>
+  <text x="50" y="130" class="subtitle">阶段：{{ jieduan }} ｜ 单词数：{{ dancishu }}</text>
+
+  <text x="50" y="200" class="section">英文正文</text>
+  <foreignObject x="50" y="230" width="700" height="300">
+    <body xmlns="http://www.w3.org/1999/xhtml">
+      <div class="content">{{ zhengwen }}</div>
+    </body>
+  </foreignObject>
+
+  <text x="50" y="550" class="section">中文翻译</text>
+  <foreignObject x="50" y="580" width="700" height="200">
+    <body xmlns="http://www.w3.org/1999/xhtml">
+      <div class="content">{{ zhongwenfanyi }}</div>
+    </body>
+  </foreignObject>
+
+  <text x="50" y="800" class="section">重点词汇</text>
+  <foreignObject x="50" y="830" width="700" height="120">
+    <body xmlns="http://www.w3.org/1999/xhtml">
+      <div class="content">{{ zhongdian|safe }}</div>
+    </body>
+  </foreignObject>
+
+  <text x="50" y="980" class="section">普通词汇</text>
+  <foreignObject x="50" y="1010" width="700" height="100">
+    <body xmlns="http://www.w3.org/1999/xhtml">
+      <div class="content">{{ putong|safe }}</div>
+    </body>
+  </foreignObject>
+</svg>

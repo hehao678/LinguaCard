@@ -1,0 +1,4 @@
+requests
+jinja2
+html2image
+python-dotenv
