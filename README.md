@@ -2,7 +2,6 @@
 
 **主要功能** ：自动生成英语学习卡片（文本 + 图像），可用于小红书发布
 
-
 本版本为 V1，实现了从输入主题词 → 自动内容生成 → 插图生成 → HTML 渲染 → 卡片导出 的完整流程。
 一些卡片的展示
 
@@ -10,12 +9,12 @@
 
 <table>
   <tr>
-    <td><img src="output/img/cars.png" width="200"/></td>
-    <td><img src="output/img/salad_fruit.png" width="200"/></td>
+    <td><img src="output/cars.png" width="200"/></td>
+    <td><img src="output/salad_fruit.png" width="200"/></td>
   </tr>
   <tr>
-    <td><img src="output/img/park.png" width="200"/></td>
-    <td><img src="output/img/salad_veg.png" width="200"/></td>
+    <td><img src="output/park.png" width="200"/></td>
+    <td><img src="output/salad_veg.png" width="200"/></td>
   </tr>
 </table>
 
