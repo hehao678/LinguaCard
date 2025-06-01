@@ -2,6 +2,23 @@
 
 **主要功能** ：自动生成英语学习卡片（文本 + 图像），可用于小红书发布
 
+
+本版本为 V1，实现了从输入主题词 → 自动内容生成 → 插图生成 → HTML 渲染 → 卡片导出 的完整流程。
+一些卡片的展示
+
+<h3>卡片展示示例</h3>
+
+<table>
+  <tr>
+    <td><img src="output/img/cars.png" width="300"/></td>
+    <td><img src="output/img/salad_fruit.png" width="300"/></td>
+  </tr>
+  <tr>
+    <td><img src="output/img/park.png" width="300"/></td>
+    <td><img src="output/img/salad_veg.png" width="300"/></td>
+  </tr>
+</table>
+
 ---
 
 ## 🔁 项目整体流程图
@@ -38,11 +55,11 @@ HTML 渲染 → PNG 图片（html2image 或 headless browser）
 
  **功能列表** ：
 
-* [X] 命令行参数输入（如：主题、阶段、单词数）
-* [X] InternLM 文本生成调用封装
-* [X] Jinja2 模板填充 HTML 卡片
-* [X] HTML → PNG 卡片图片（html2image）
-* [X] 保存结果到本地 `/output` 文件夹
+* [ ] 命令行参数输入（如：主题、阶段、单词数）
+* [ ] InternLM 文本生成调用封装
+* [ ] Jinja2 模板填充 HTML 卡片
+* [ ] HTML → PNG 卡片图片（html2image）
+* [ ] 保存结果到本地 `/output` 文件夹
 
  **技术关键词** ：Python, requests, Jinja2, html2image, headless Chrome (推荐 Puppeteer)
 
@@ -121,3 +138,53 @@ web_ui/
 3. 🛠️ 后期部署服务器版本，加入多任务 & 数据保存能力
 
 ---
+
+## 安装stablediffusion
+
+主要的脚本如下，参考原来的readme https://github.com/Stability-AI/stablediffusion?tab=readme-ov-file
+
+```bash
+git clone https://github.com/Stability-AI/stablediffusion.git
+conda create -n stablediff -y python=3.10
+conda activate stablediff
+cd stablediffusion
+conda install pytorch==1.12.1 torchvision==0.13.1 -c pytorch
+pip install transformers==4.19.2 diffusers invisible-watermark
+pip install -e .
+```
+
+原始的仓库建议使用xformers 加快推理的速度，具体的操作如下
+先使用 `nvcc--vession `查看自己的cuda版本，我的是12.4版本
+
+```bash
+(stablediff) (base) hhe@ps:~/mnt/prj/xformers$ nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2024 NVIDIA Corporation
+Built on Tue_Feb_27_16:19:38_PST_2024
+Cuda compilation tools, release 12.4, V12.4.99
+Build cuda_12.4.r12.4/compiler.33961263_0
+```
+
+文生图模型中自注意力模块占用大量显存，`xformers` 可降低 30%+ 显存占用，并提升速度，后续的安装命令：
+
+```bash
+export CUDA_HOME=/usr/local/cuda-12.4
+conda install -c nvidia/label/cuda-12.4.0 cuda-nvcc
+conda install -c conda-forge gcc
+conda install -c conda-forge gxx_linux-64==9.5.0
+cd ..
+git clone https://github.com/facebookresearch/xformers.git
+cd xformers
+git submodule update --init --recursive
+pip install -r requirements.txt
+pip install -e .
+cd ../stablediffusion
+```
+
+验证是否安装成功，在终端中的conda环境下面运行如下命令，或者使用 `pip show xformers`
+
+```bash
+python -c "import xformers; print(xformers.__version__)"
+#输出
+0.0.31+da84ce3a.d20250601
+```

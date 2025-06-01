@@ -1,5 +1,3 @@
-# exporter/html_to_image_firefox.py
-
 from playwright.sync_api import sync_playwright
 import os
 
@@ -29,5 +27,4 @@ if __name__ == "__main__":
     html_path = os.path.join(base_dir, "../output/美食.html")
     html_path = os.path.abspath(html_path)
     png_path = html_path.replace(".html", "_firefox.png")
-
     html_to_png_firefox(html_path, png_path)

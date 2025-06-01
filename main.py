@@ -1,13 +1,25 @@
-# main.py
 
 from generator.text_generator import generate_card_content
 from renderer.card_renderer import render_card_to_html
-from exporter.html_to_image import html_to_png
-from renderer.svg_renderer import render_svg
-from exporter.svg_to_png import svg_to_png
+from exporter.html_to_image_firefox import html_to_png_firefox
+from generator.llm_prompt_generator import generate_image_prompt_by_llm
+from image_gen.local_sd_gen import generate_sd_image
+
 import os
 import sys
 import html
+import re
+
+
+def truncate_words_block(html_str: str, max_items: int = 5) -> str:
+    """
+    只选择重点和普通词汇的前5个单词
+    从 html 字符串中提取前 max_items 项（以 <br> 或 <li> 分隔）
+    """
+    # 按行分割
+    lines = re.split(r'<br>|<li>|\\n', html_str)
+    lines = [line for line in lines if line.strip()]
+    return "<br>".join(lines[:max_items])
 
 
 def run_card_pipeline(topic: str, level: str = "小学", word_count: int = 60):
@@ -20,21 +32,22 @@ def run_card_pipeline(topic: str, level: str = "小学", word_count: int = 60):
     # 补充一些字段信息
     data["jieduan"] = level
     data["dancishu"] = str(word_count)
-    # data["tupian"] = "/api/placeholder/800/400"  # 默认图片占位
-    data["tupian"] = "https://source.unsplash.com/800x400/?food"
+    # 限制重点词汇和普通词汇
+    data["zhongdian"] = truncate_words_block(
+        data.get("zhongdian", ""), max_items=5)
+    data["putong"] = truncate_words_block(data.get("putong", ""), max_items=5)
+    img_prompt = generate_image_prompt_by_llm(data)
+    print("stable diffusion prompt:", img_prompt)
+
+    images = generate_sd_image(img_prompt)
+    data["tupian"] = images[0]  # 选择第一张作为卡片插图
 
     output_base = os.path.join("output", topic.replace(" ", "_"))
-    # html_path = f"{output_base}.html"
-    # png_path = f"{output_base}.png"
-    svg_path = f"{output_base}.svg"
+    html_path = f"{output_base}.html"
     png_path = f"{output_base}.png"
 
-    # render_card_to_html(data, html_path)
-    # html_to_png(html_path, png_path)
-    for k in ["zhengwen", "zhongwenfanyi", "zhongdian", "putong"]:
-        data[k] = html.escape(data.get(k, ""))
-    render_svg(data, svg_path)
-    svg_to_png(svg_path, png_path)
+    render_card_to_html(data, html_path)
+    html_to_png_firefox(html_path, png_path)
     print("[SUCCESS] 学习卡片全部生成完成！")
 
 
@@ -47,6 +60,6 @@ if __name__ == "__main__":
     else:
         topic = "美食"
         level = "小学"
-        word_count = 60
+        word_count = 20
 
     run_card_pipeline(topic, level, word_count)
