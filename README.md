@@ -8,10 +8,12 @@
 
 <table>
   <tr>
-    <td><img src="output/cars.png" width="300"/></td>
-    <td><img src="output/salad_fruit.png" width="300"/></td>
-    <td><img src="output/park.png" width="300"/></td>
-    <td><img src="output/salad_veg.png" width="300"/></td>
+    <td><img src="output/cars.png" width="500"/></td>
+    <td><img src="output/salad_fruit.png" width="500"/></td>
+  <tr>
+  <tr>
+    <td><img src="output/park.png" width="500"/></td>
+    <td><img src="output/salad_veg.png" width="500"/></td>
   </tr>
 </table>
 
