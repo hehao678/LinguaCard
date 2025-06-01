@@ -4,17 +4,14 @@
 
 本版本为 V1，实现了从输入主题词 → 自动内容生成 → 插图生成 → HTML 渲染 → 卡片导出 的完整流程。
 一些卡片的展示
-
-## 卡片展示示例
+<h3>卡片展示示例</h3>
 
 <table>
   <tr>
-    <td><img src="output/cars.png" width="200"/></td>
-    <td><img src="output/salad_fruit.png" width="200"/></td>
-  </tr>
-  <tr>
-    <td><img src="output/park.png" width="200"/></td>
-    <td><img src="output/salad_veg.png" width="200"/></td>
+    <td><img src="output/cars.png" width="300"/></td>
+    <td><img src="output/salad_fruit.png" width="300"/></td>
+    <td><img src="output/park.png" width="300"/></td>
+    <td><img src="output/salad_veg.png" width="300"/></td>
   </tr>
 </table>
 
