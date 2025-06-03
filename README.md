@@ -1,9 +1,11 @@
-# 英卡助手 · LinguaCard
+# 英卡助手 · LinguaCard V1说明
 
-**主要功能** ：自动生成英语学习卡片（文本 + 图像），可用于小红书发布
+## 📌 项目简介
+
+**LinguaCard** 是一个基于大语言模型和文生图模型的英语学习卡片生成器，支持自动生成英文段落、重点词汇、中文翻译及配套插图，并以卡片样式导出为 HTML 和 PNG 图片，可用于小红书、抖音等平台发布
 
 本版本为 V1，实现了从输入主题词 → 自动内容生成 → 插图生成 → HTML 渲染 → 卡片导出 的完整流程。
-一些卡片的展示
+
 <h3>卡片展示示例</h3>
 
 <table>
@@ -19,127 +21,84 @@
 
 ---
 
-## 🔁 项目整体流程图
+## 🧱 项目结构
 
+```bash
+LinguaCard/
+├── main.py                       # 主入口脚本，执行卡片生成流程
+├── generator/
+│   ├── text_generator.py         # 调用书生大模型生成卡片正文、翻译、词汇等
+│   └── llm_prompt_generator.py   # 调用书生大模型生成插图提示词 prompt
+├── image_gen/
+│   └── local_sd_gen.py           # 本地部署 Stable Diffusion 模型生成插图
+├── renderer/
+│   └── card_renderer.py          # Jinja2 渲染 HTML 卡片
+├── exporter/
+│   └── html_to_image_firefox.py  # 使用 Firefox 截图保存为 PNG
+├── templates/
+│   └── card_template.html        # HTML 模板样式（V1）
+├── output/                       # 卡片生成输出目录（HTML + PNG）
+├── .env                          # 环境变量（存储 API Token）
+└── requirements.txt              # 项目依赖（可选）
 ```
-用户输入主题/参数
-        ↓
-使用 InternLM 调用生成英文短文 + 中文翻译 + 关键词
-        ↓
-将生成结果填充至 HTML 卡片模板
-        ↓
-HTML 渲染 → PNG 图片（html2image 或 headless browser）
-        ↓
-图片保存至本地/服务器，供后续上传小红书/公众号等使用
-```
 
----
+## 🚀 功能流程
 
-## 🧱 模块划分（通用三层结构）
+第一个版本的主要的流程如下：
 
-| 模块层          | 模块名称              | 说明                               |
-| --------------- | --------------------- | ---------------------------------- |
-| 🧠 智能生成层   | `text_generator.py` | 使用 InternLM 接口生成英语卡片内容 |
-| 🎨 卡片渲染层   | `card_renderer.py`  | 通过 HTML 模板 + Jinja2 填充内容   |
-| 🖼️ 输出导出层 | `image_exporter.py` | HTML → PNG 图片，用于展示或发布   |
-
----
-
-## 🚧 三阶段版本规划
-
-### 🚀 V1：文本卡片自动生成与图片导出（基础 MVP）
-
- **目标** ：最小可用版本，用户可通过 CLI 输入主题 → 自动生成图片
-
- **功能列表** ：
-
-* [ ] 命令行参数输入（如：主题、阶段、单词数）
-* [ ] InternLM 文本生成调用封装
-* [ ] Jinja2 模板填充 HTML 卡片
-* [ ] HTML → PNG 卡片图片（html2image）
-* [ ] 保存结果到本地 `/output` 文件夹
-
- **技术关键词** ：Python, requests, Jinja2, html2image, headless Chrome (推荐 Puppeteer)
-
- **文件结构（初步）** ：
-
-```
-lingua_card/
-├── main.py                # CLI 主控制逻辑
-├── config.py              # API Token 管理
-├── generator.py           # InternLM 文本生成模块
-├── renderer.py            # HTML 卡片模板填充
-├── exporter.py            # 图片导出模块
-├── templates/card.html    # 卡片 HTML 模板
-├── output/                # 输出图片
-└── requirements.txt
+```mermaid
+flowchart LR
+    A[输入主题词] --> B[调用书生生成卡片内容]
+    B --> C[调用书生生成插图 prompt]
+    C --> D[调用本地 SD 生成插图]
+    D --> E[渲染 HTML 卡片]
+    E --> F[Firefox 截图为 PNG]
 ```
 
 ---
 
-### 🌈 V2：交互式 Web 界面（Streamlit/Gradio 可选）
+## 📥 使用方法
 
- **目标** ：提供可视化操作界面，用户无需写命令行
+### 1.创建conda环境
 
- **新增功能** ：
+这里的环境包含了本地运行部署的stablediffusion所需包
 
-* [ ] 主题输入框 + 参数选择（级别、风格等）
-* [ ] 在线生成卡片图并展示
-* [ ] 下载图片按钮
-* [ ] 多模板风格可选（卡通/极简/留白）
-
- **技术关键词** ：Streamlit 或 Gradio（建议 Streamlit）
-
- **扩展结构** ：
-
-```
-web_ui/
-├── app.py                # Streamlit 页面入口
-├── assets/               # 样式、图标等
-└── templates/            # 多风格卡片模板
+```bash
+conda create -n lingua python=3.10 -y
+conda activate lingua
+git clone https://github.com/hehao678/LinguaCard.git
+cd LinguaCard
+pip install -r requirements.txt
 ```
 
----
+创建 `.env` 文件,使用的是书生浦语大模型的api,免费好用！！！可以通过[书生浦语网站](https://internlm.intern-ai.org.cn/api/document?lang=zh)获取，注册一下就行
 
-### 🧠 V3：后端服务部署 + 定时任务 + 批量生成
+```env
+API_TOKEN=书生API密钥
+```
 
- **目标** ：可作为 SaaS 工具部署 + 每日生成批量卡片
+### 2.安装并部署stablediffusion
 
- **功能扩展** ：
+目前好多的文生图模型api需要一定的费用，如果自己输入提示词再网站上生成，输出图片然后拼接卡片也是可以的；
+这里提供一种本地部署的stablediffusion的方式，后续可以通过脚本直接运行部署，通过模型输出的prompt直接生成相关的图片
 
-* [ ] 后台服务（FastAPI）接收请求生成卡片（可供小程序/前端调用）
-* [ ] 每日定时生成卡片内容（如定时更新5个主题）
-* [ ] 管理词库 / 用户收藏 / 生词本功能（预留数据库支持）
-* [ ] 卡片生成记录追踪与日志
+首先需要下载相关的stabledifusion库
 
- **技术关键词** ：FastAPI, APScheduler, SQLite or MongoDB（可选）
+```bash
+conda activate lingua
+git clone https://github.com/Stability-AI/stablediffusion.git
 
----
+```
 
-## 📌 推荐技术栈（统一 Python 生态）
+具体的使用说明可以参考[stablediffusion version的说明](https://github.com/Stability-AI/stablediffusion?tab=readme-ov-file#)
 
-| 类型         | 推荐                       | 说明                      |
-| ------------ | -------------------------- | ------------------------- |
-| 模型调用     | `requests`+ InternLM API | 免费、稳定的 API 调用接口 |
-| 模板渲染     | `Jinja2`                 | HTML 模板替换关键变量     |
-| HTML → 图片 | `html2image`+ Chromium   | 稳定无头浏览器截图        |
-| 交互界面     | `Streamlit`（V2）        | 快速上线，适合初版 UI     |
-| 后端服务     | `FastAPI`（V3）          | REST API 服务搭建         |
-| 定时任务     | `APScheduler`            | 定时任务调度              |
+可以选择直接再huggingface上面下载相关的模型文件，我是直接下载768-v-ema.ckpt（需要科学上网），[huggingface下载连接](https://huggingface.co/stabilityai/stable-diffusion-2/blob/main/768-v-ema.ckpt)；
 
----
+环境安装之前在requirements.txt已经封装好了，需要安装xformers加快模型的推理速度
 
-## ✅ 建议开发顺序
+需要将下载之后的模型文件放入到stablediffusion/checkpoints文件夹里面
 
-1. ✅ 实现 V1 的命令行卡片生成流程（建议我先帮你搭建基础框架）
-2. ⏩ 等你测试成功后，进入 V2 可视化页面构建
-3. 🛠️ 后期部署服务器版本，加入多任务 & 数据保存能力
-
----
-
-## 安装stablediffusion
-
-主要的脚本如下，参考原来的readme https://github.com/Stability-AI/stablediffusion?tab=readme-ov-file
+原始的stablediffusion仓库,主要的脚本如下，参考原来的readme https://github.com/Stability-AI/stablediffusion?tab=readme-ov-file
 
 ```bash
 git clone https://github.com/Stability-AI/stablediffusion.git
@@ -186,3 +145,24 @@ python -c "import xformers; print(xformers.__version__)"
 #输出
 0.0.31+da84ce3a.d20250601
 ```
+
+### 3. 运行示例
+
+```bash
+python main.py "水果沙拉" "小学" 30
+python main.py "蔬菜沙拉" "小学" 30
+python main.py "游乐园" "小学" 30
+```
+
+输出结果：
+
+- `output/游乐园.html` → HTML 卡片
+- `output/游乐园.png` → 卡片截图图像
+
+---
+
+## 📌 作者备注
+
+该项目为个人 Agent 工程实战，用于演示如何结合大语言模型 + 本地推理模型完成知识型内容生成工作流。
+
+欢迎参考和扩展。
