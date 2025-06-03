@@ -159,7 +159,11 @@ python main.py "游乐园" "小学" 30
 - `output/游乐园.html` → HTML 卡片
 - `output/游乐园.png` → 卡片截图图像
 
----
+## ⚙️ 配置说明
+
+- `image_gen/local_sd_gen.py` 默认使用 `768-v-ema.ckpt` 权重
+- 本地显卡需支持 ≥12G 显存，建议安装 xformers 加速模块
+- 模板风格 `card_template.html` 可切换或定制
 
 ## 📌 作者备注
 
